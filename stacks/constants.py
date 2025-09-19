@@ -1,0 +1,2 @@
+IMAGES_DYNAMODB_TABLE_NAME="images-table"
+IMAGES_S3_BUCKET_NAME= "images-bucket"
