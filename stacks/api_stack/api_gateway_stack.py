@@ -56,14 +56,14 @@ class ApiStack(Stack):
         table.grant_read_data(list_images_lambda)
 
 
-        get_image_lambda = _lambda.Function(
+        download_image_lambda = _lambda.Function(
             self,  
             f"{id}-get-image-lambda",
-            function_name="get_image_lambda",
-            description="Lambda function to Get image",
+            function_name="download_image_lambda",
+            description="Lambda function to Download image",
             runtime=_lambda.Runtime.PYTHON_3_11,            
             code=_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), "lambdas")),
-            handler="get_image.handler",
+            handler="download_image.handler",
             timeout=Duration.seconds(30),
             environment={
                "IMAGES_TABLE": table.table_name,
@@ -71,8 +71,8 @@ class ApiStack(Stack):
             },
         )
 
-        table.grant_read_data(get_image_lambda)
-        bucket.grant_read(get_image_lambda)
+        table.grant_read_data(download_image_lambda)
+        bucket.grant_read(download_image_lambda)
 
 
         delete_image_lambda = _lambda.Function(
@@ -102,5 +102,5 @@ class ApiStack(Stack):
         initiate.add_method("POST", apigw.LambdaIntegration(initiate_upload_lambda))
 
         image_id = images.add_resource("{imageId}")
-        image_id.add_method("GET", apigw.LambdaIntegration(get_image_lambda))
+        image_id.add_method("GET", apigw.LambdaIntegration(download_image_lambda))
         image_id.add_method("DELETE", apigw.LambdaIntegration(delete_image_lambda))

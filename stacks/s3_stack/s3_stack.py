@@ -26,7 +26,8 @@ class S3Stack(Stack):
             handler="image_processor.handler",
             timeout=Duration.seconds(30),
             environment={
-                "IMAGES_TABLE": table.table_name                
+                "IMAGES_TABLE": table.table_name,
+                "IMAGES_BUCKET": self.bucket.bucket_name            
             },
         )
 

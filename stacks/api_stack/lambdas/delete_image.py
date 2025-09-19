@@ -25,7 +25,7 @@ def lambda_handler(event, context):
     # Generate pre-signed download URL
     download_url = s3.generate_presigned_url(
         "get_object",
-        Params={"Bucket": bucket_name, "Key": f"{user_id}/{image_id}"},
+        Params={"Bucket": bucket_name, "Key": f"users/{user_id}/{image_id}"},
         ExpiresIn=3600,
     )
 
