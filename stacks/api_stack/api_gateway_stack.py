@@ -74,7 +74,7 @@ class ApiStack(Stack):
         )
 
         get_img_role = create_lambda_role("GetImage",
-                        actions=["dynamodb:Query", "s3:GetObject"],
+                        actions=["dynamodb:Query", "s3:GetObject", "s3:ListBucket"],
                         resources=[table.table_arn, f"{table.table_arn}/index/*", f"{bucket.bucket_arn}/*"])
 
 
