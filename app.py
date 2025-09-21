@@ -10,4 +10,7 @@ dynamo_stack = DynamoDBStack(app, "ImagesDynamoStack")
 s3_stack = S3Stack(app, "ImagesS3Stack", table=dynamo_stack.table)
 api_stack = ApiStack(app, "ImagesApiStack",  table=dynamo_stack.table,  bucket=s3_stack.bucket)
 
+s3_stack.add_dependency(dynamo_stack)
+api_stack.add_dependency(s3_stack)
+
 app.synth()
