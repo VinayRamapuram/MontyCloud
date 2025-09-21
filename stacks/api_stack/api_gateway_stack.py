@@ -102,8 +102,7 @@ class ApiStack(Stack):
         )
 
 
-        # API Resources
-        
+        # API Resources        
         api = apigw.RestApi(self,             
                             "ImagesApi",
                             rest_api_name="Images Service",
@@ -112,7 +111,6 @@ class ApiStack(Stack):
                                 "allow_methods": apigw.Cors.ALL_METHODS,
                             })  
 
-        api = apigw.RestApi(self, "ImagesApi", rest_api_name="Images Service")
         images = api.root.add_resource("images")
         images.add_method("POST", apigw.LambdaIntegration(initiate_upload_lambda))
         images.add_method("GET", apigw.LambdaIntegration(list_images_lambda))
