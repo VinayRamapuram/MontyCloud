@@ -13,7 +13,7 @@ def http_response(status_code:int, body:dict):
     return { "statusCode": status_code, "body": json.dumps(body) }
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     """
     Validate imageId in pathParameters.
     Conditional image deletion
