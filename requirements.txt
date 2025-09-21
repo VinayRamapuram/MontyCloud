@@ -1,8 +1,6 @@
-aws-cdk-lib
-constructs
-jsii
-boto3>=1.18.32
+aws-cdk-lib>=2.0.0
+constructs>=10.0.0
+boto3
 botocore
-pytest==6.2.5
-pytest-cov==3.0.0
-docker
+jsonschema
+pillow
