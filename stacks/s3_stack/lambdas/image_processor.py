@@ -2,6 +2,7 @@ import os, json, boto3
 from botocore.exceptions import ClientError
 from PIL import Image
 import io
+from boto3.dynamodb.conditions import Key
 
 IMAGES_TABLE = os.environ.get("IMAGES_TABLE")
 IMAGES_BUCKET = os.environ.get("IMAGES_BUCKET")
@@ -51,7 +52,7 @@ def process_s3_event(s3_rec):
     user_id = parts[1]
     image_id = parts[2]
 
-    resp = table.query(IndexName="imageId-index", KeyConditionExpression=boto3.dynamodb.conditions.Key("imageId").eq(image_id), Limit=1)
+    resp = table.query(IndexName="imageId-index", KeyConditionExpression=Key("imageId").eq(image_id), Limit=1)
     items = resp.get("Items", [])
     if not items:
         print("metadata_not_found", imageId=image_id, key=key)

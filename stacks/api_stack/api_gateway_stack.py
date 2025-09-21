@@ -1,16 +1,27 @@
 import os
-from aws_cdk import Stack, Duration, aws_apigateway as apigw, aws_lambda as _lambda, aws_iam as iam
+from aws_cdk import Stack, Duration, aws_apigateway as apigw, aws_lambda as _lambda, aws_iam as iam, aws_logs
+from aws_cdk.aws_lambda_python_alpha import PythonFunction, PythonLayerVersion
 from constructs import Construct
+from aws_cdk import Duration
 
 class ApiStack(Stack):
     def __init__(self, scope: Construct, id: str, table, bucket, **kwargs):
         super().__init__(scope, id, **kwargs)
 
+        
+        lambda_layer = PythonLayerVersion(
+            self,
+            id=f"{id}-lambda-layer",
+            layer_version_name=f"{id}-lambda-layer",
+            entry=os.path.join(os.path.dirname(__file__), "lambdas", "python_layer"),            
+            compatible_runtimes=[_lambda.Runtime.PYTHON_3_11]            
+        )
+        
         def create_lambda_role(name, actions, resources):
             role = iam.Role(self, f"{name}Role", assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"))
             role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"))
             role.add_to_policy(iam.PolicyStatement(actions=actions, resources=resources))
-            return role
+            return role        
         
         initiate_upload_role = create_lambda_role("InitiateUpload",
                                             actions=["s3:PutObject", "s3:CreateMultipartUpload", "s3:AbortMultipartUpload"],
@@ -21,16 +32,20 @@ class ApiStack(Stack):
 
 
         # Generate Pre Signed URL
-        initiate_upload_lambda = _lambda.Function(
+        initiate_upload_lambda = PythonFunction(
             self,  
             f"{id}-initiate-upload-lambda",
             function_name="initiate_upload_lambda",
             description="Lambda function to Upload image",
             runtime=_lambda.Runtime.PYTHON_3_11,            
-            code=_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), "lambdas")),
-            handler="initiate_upload.handler",
+            entry=os.path.join(os.path.dirname(__file__), "lambdas"),
+            index="initiate_upload.py",            
+            architecture=_lambda.Architecture.X86_64,
+            layers=[lambda_layer],
             timeout=Duration.seconds(30),
             role=initiate_upload_role,
+            log_retention=aws_logs.RetentionDays.SIX_MONTHS,
+            memory_size=512,
             environment={
                 "IMAGES_TABLE": table.table_name,
                 "IMAGES_BUCKET": bucket.bucket_name               

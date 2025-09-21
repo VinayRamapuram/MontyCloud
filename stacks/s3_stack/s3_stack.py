@@ -4,7 +4,7 @@ from aws_cdk import (Stack, RemovalPolicy, Duration, aws_iam,  aws_s3 as s3,
                      aws_sqs as sqs, aws_s3_notifications as s3n,)
 from constructs import Construct
 
-from stacks.constants import IMAGES_S3_BUCKET_NAME
+from stacks.constants import IMAGES_S3_BUCKET_NAME, IMAGE_SERVICE_QUEUE_NAME, IMAGE_SERVICE_DLQ_QUEUE_NAME
 
 class S3Stack(Stack):
     def __init__(self, scope: Construct, id: str, table, **kwargs):
@@ -23,7 +23,8 @@ class S3Stack(Stack):
 
     def create_bucket(self):
         bucket = s3.Bucket(self, 
-                            IMAGES_S3_BUCKET_NAME,
+                            "ImagesBucket",
+                            bucket_name=IMAGES_S3_BUCKET_NAME,
                             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
                             encryption=s3.BucketEncryption.S3_MANAGED,
                             versioned=True,
@@ -33,10 +34,14 @@ class S3Stack(Stack):
         
         
     def create_queue(self):
-        dlq = sqs.Queue(self, "ImageProcessorDLQ", retention_period=Duration.days(14))
+        dlq = sqs.Queue(self, 
+                        "ImageProcessorDLQ",
+                        queue_name=IMAGE_SERVICE_DLQ_QUEUE_NAME, 
+                        retention_period=Duration.days(14))
 
         queue = sqs.Queue(self, 
                         "ImageProcessorQueue",
+                        queue_name=IMAGE_SERVICE_QUEUE_NAME,
                         visibility_timeout=Duration.seconds(300),
                         retention_period=Duration.days(4),
                         dead_letter_queue=sqs.DeadLetterQueue(max_receive_count=5, queue=dlq),
