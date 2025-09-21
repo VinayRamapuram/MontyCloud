@@ -74,8 +74,10 @@ class ApiStack(Stack):
         )
 
         get_img_role = create_lambda_role("GetImage",
-                        actions=["dynamodb:Query", "s3:GetObject", "s3:ListBucket"],
+                        actions=["dynamodb:Query", "s3:GetObject"],
                         resources=[table.table_arn, f"{table.table_arn}/index/*", f"{bucket.bucket_arn}/*"])
+
+        get_img_role.add_to_policy(iam.PolicyStatement(actions=["s3:ListBucket"],resources=[bucket.bucket_arn]))
 
 
         download_image_lambda = _lambda.Function(
