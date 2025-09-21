@@ -1,3 +1,2 @@
-jsonschema
 boto3
-pillow
+Pillow
