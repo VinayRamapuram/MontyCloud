@@ -42,5 +42,7 @@ It provides APIs to upload, fetch, list, and delete images, while ensuring resil
 ### Install dependencies
 ```bash
 pip install -r requirements.txt
+```
 
-
+### Architecture Overview
+(https://github.com/VinayRamapuram/MontyCloud/blob/main/ImageServiceArchitecture.png)
