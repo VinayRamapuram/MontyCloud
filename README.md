@@ -45,4 +45,4 @@ pip install -r requirements.txt
 ```
 
 ### Architecture Overview
-(https://github.com/VinayRamapuram/MontyCloud/blob/main/ImageServiceArchitecture.png)
+(https://github.com/VinayRamapuram/MontyCloud/blob/main/ImageServiceArchitecture.png?raw=true)
