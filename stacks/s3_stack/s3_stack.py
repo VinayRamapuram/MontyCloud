@@ -1,6 +1,7 @@
 import os
 from aws_cdk import (Stack, RemovalPolicy, Duration, aws_s3 as s3, 
-                     aws_lambda as _lambda, aws_sqs as sqs, aws_s3_notifications as s3n, aws_logs)
+                     aws_lambda as _lambda, aws_sqs as sqs, aws_s3_notifications as s3n, aws_logs,
+                     aws_lambda_event_sources as lambda_event_sources)
 from constructs import Construct
 from aws_cdk.aws_lambda_event_sources import SqsEventSource
 from aws_cdk.aws_lambda_python_alpha import PythonFunction, PythonLayerVersion
@@ -91,8 +92,8 @@ class S3Stack(Stack):
 
 
         # S3 Event 
-        img_processor_lambda.add_event_source(SqsEventSource(
-                self.queue,
+        img_processor_lambda.add_event_source(lambda_event_sources.SqsEventSource(
+                queue=self.queue,
                 batch_size=10,
                 max_batching_window=Duration.seconds(30)
             )
